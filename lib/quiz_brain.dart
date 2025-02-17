@@ -1,6 +1,9 @@
 import 'question.dart';
 class QuizBrain{
-  List<Question> questionBank = [
+
+  int _questionNumber = 0;
+
+  final List<Question> _questionBank = [
     Question('My Name Is Avi',  true),
     Question( 'Taran Is Not Mutthal', false),
     Question( 'My Crush Is Cute', true),
@@ -18,4 +21,34 @@ class QuizBrain{
     Question('Chocolate affects a dog\'s heart and nervous system; a few ounces are enough to kill a small dog.', true),
     Question('In West Virginia, USA, if you accidentally hit an animal with your car, you are free to take it home to eat.', true),
   ];
+  void nextQuestion()
+  {
+    if(_questionNumber < _questionBank.length-1)
+      {
+        _questionNumber++;
+      }
+  }
+  String getQuestion()
+  {
+    return _questionBank[_questionNumber].question;
+  }
+  bool getAnswer()
+  {
+    return _questionBank[_questionNumber].answer;
+  }
+
+  bool isFinished()
+  {
+    if(_questionNumber >= _questionBank.length-1)
+      {
+        return true;
+      }
+    else return false;
+  }
+
+  void reset()
+  {
+    _questionNumber = 0;
+  }
+
 }

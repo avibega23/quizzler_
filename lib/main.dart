@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizzler/quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 void main() => runApp(const Quizzler());
@@ -32,7 +33,50 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> iconList = [];
-  int questionNumber = 0;
+
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getAnswer();
+    if (quizBrain.isFinished() == true) {
+      Alert(
+        context: context,
+        type: AlertType.success,
+        title: "Finished",
+        desc: "You've Reached The End",
+        buttons: [
+          DialogButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                quizBrain.reset();
+                iconList = [];
+              });
+            },
+            width: 120,
+            child: const Text(
+              "Restart",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ],
+      ).show();
+    } else {
+      if (userPickedAnswer != correctAnswer) {
+        iconList.add(
+          const Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        );
+      } else {
+        iconList.add(
+          const Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +90,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: const EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                quizBrain.questionBank[questionNumber].question,
+                quizBrain.getQuestion(),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 25.0,
@@ -72,24 +116,12 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked true.
-                setState(() {
-                  if (quizBrain.questionBank[questionNumber].answer == false) {
-                    iconList.add(
-                      const Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ),
-                    );
-                  } else {
-                    iconList.add(
-                      const Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    );
-                  }
-                  questionNumber++;
-                });
+                setState(
+                  () {
+                    checkAnswer(true);
+                    quizBrain.nextQuestion();
+                  },
+                );
               },
             ),
           ),
@@ -111,22 +143,8 @@ class _QuizPageState extends State<QuizPage> {
               onPressed: () {
                 //The user picked false.
                 setState(() {
-                  if (quizBrain.questionBank[questionNumber].answer == true) {
-                    iconList.add(
-                      const Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ),
-                    );
-                  } else {
-                    iconList.add(
-                      const Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    );
-                  }
-                  questionNumber++;
+                  checkAnswer(false);
+                  quizBrain.nextQuestion();
                 });
               },
             ),
